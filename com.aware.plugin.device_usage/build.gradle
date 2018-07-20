@@ -1,0 +1,103 @@
+apply plugin: 'com.android.library'
+
+project.ext {
+    mqtt_libs = (System.getenv("mqtt_libs") as String ?: "1.2.0")
+    ion_libs = (System.getenv("ion_libs") as String ?: "2.+")
+    support_libs = (System.getenv("support_libs") as String ?: "27.1.0")
+    google_libs = (System.getenv("google_libs") ?: "12.0.0")
+    version_code = (System.getenv("aware_revision") as Integer ?: 700)
+    version_readable = "4.0." + version_code + "." + (System.getenv("aware_label") as String ?: "selfie")
+    compile_sdk = (System.getenv("compile_sdk") as Integer ?: 26)
+    target_sdk = (System.getenv("target_sdk") as Integer ?: 25)
+    minimum_sdk = (System.getenv("minimum_sdk") as Integer ?: 19) //Android 4.0+
+    build_tools = (System.getenv("build_tools") ?: "27.0.3")
+    aware_libs = (System.getenv("aware_libs") as String ?: "master-SNAPSHOT")
+}
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://maven.google.com'
+        }
+        google()
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.0'
+    }
+}
+
+allprojects {
+    repositories {
+        maven {
+            url 'https://maven.google.com'
+        }
+        google()
+        jcenter()
+        mavenCentral()
+    }
+}
+
+android {
+    compileSdkVersion compile_sdk
+    buildToolsVersion build_tools
+
+    defaultConfig {
+        //applicationId 'com.aware.plugin.device_usage'
+        minSdkVersion minimum_sdk
+        targetSdkVersion target_sdk
+        versionCode version_code
+        versionName version_readable
+
+        resValue "string", "provider_device_usage", android.defaultConfig.applicationId + ".provider.device_usage"
+
+    }
+    signingConfigs {
+        release
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+if (System.getenv("storeFile") != null && System.getenv("storePassword") != null && System.getenv("keyAlias") != null && System.getenv("keyPassword") != null) {
+    android.signingConfigs.release.storeFile = file(System.getenv("storeFile"))
+    android.signingConfigs.release.storePassword = System.getenv("storePassword")
+    android.signingConfigs.release.keyAlias = System.getenv("keyAlias")
+    android.signingConfigs.release.keyPassword = System.getenv("keyPassword")
+} else {
+    println("No keystore defined. Unsigned!")
+    android.buildTypes.release.signingConfig = null
+}
+
+repositories {
+    mavenCentral()
+
+    jcenter()
+    if (project.hasProperty('local.repo'))
+    {
+        maven { name 'glide-local'; url project.property('local.repo') }
+    }
+    maven { name 'glide-snapshot'; url 'http://oss.sonatype.org/content/repositories/snapshots' }
+    flatDir name: 'libs', dirs: 'libs'
+
+    maven { url "https://jitpack.io" } //MPAndroidChart, AWARE
+
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+dependencies {
+    api "com.github.denzilferreira:aware-client:$aware_libs"
+    implementation 'com.github.PhilJay:MPAndroidChart:v2.1.3'
+}

@@ -19,8 +19,24 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+
+    jcenter()
+    if (project.hasProperty('local.repo'))
+    {
+        maven { name 'glide-local'; url project.property('local.repo') }
+    }
+    maven { name 'glide-snapshot'; url 'http://oss.sonatype.org/content/repositories/snapshots' }
+    flatDir name: 'libs', dirs: 'libs'
+
+    maven { url "https://jitpack.io" } //MPAndroidChart, AWARE
+
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':com.aware.plugin.device_usage')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     testImplementation 'junit:junit:4.12'
@@ -31,4 +47,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services:12.0.1'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.koushikdutta.ion:ion:2.2.1'
+
 }

@@ -38,6 +38,26 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.aware.ui.PermissionsHandler"
+            android:launchMode="standard"
+            tools:replace="android:launchMode" />
+
+        <service
+            android:name="com.aware.Applications"
+            android:enabled="@bool/accessibility_access"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            tools:replace="android:enabled">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+                <category android:name="android.accessibilityservice.category.FEEDBACK_GENERIC" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/aware_accessibility_config" />
+        </service>
+
         <receiver android:name=".MainActivity$ContextReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="ACTION_AWARE_PLUGIN_YOUR_RECEIVER_TRIGGER"></action>
@@ -45,11 +65,11 @@
         </receiver>
 
         <provider
-        android:name="com.aware.providers.Scheduler_Provider"
-        android:authorities="${applicationId}.provider.scheduler"
-        android:exported="true"
-        android:readPermission="com.aware.READ_CONTEXT_DATA"
-        android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
+            android:name="com.aware.providers.Scheduler_Provider"
+            android:authorities="${applicationId}.provider.scheduler"
+            android:exported="true"
+            android:readPermission="com.aware.READ_CONTEXT_DATA"
+            android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
         <provider
             android:name="com.aware.providers.Bluetooth_Provider"
             android:authorities="${applicationId}.provider.bluetooth"
@@ -275,6 +295,16 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <provider
+            android:name="com.aware.plugin.device_usage.Provider"
+            android:authorities="${applicationId}.provider.device_usage"
+            android:exported="true"
+            android:label="@string/plugin_device_usage"
+            android:readPermission="com.aware.READ_CONTEXT_DATA"
+            android:syncable="true"
+            android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
+
 
 
     </application>

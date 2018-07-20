@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void brisiBazo (View v) {
         deleteDatabaseMaster(Accelerometer_Provider.Accelerometer_Data.CONTENT_URI);
+        deleteDatabaseMaster(Gyroscope_Provider.Gyroscope_Data.CONTENT_URI);
     }
 
     public void deleteDatabaseMaster (Uri databaseUri) {
